@@ -3,3 +3,4 @@ node_modules
 *.log
 *sublime*
 *.rdb
+Global-Configs/Master-Key/master.conf

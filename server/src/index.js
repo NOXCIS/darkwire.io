@@ -20,7 +20,7 @@ dotenv.config();
 const env = process.env.NODE_ENV || 'development';
 
 const app = new Koa();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 80;
 
 const router = new Router();
 const koaBody = new KoaBody();
@@ -66,7 +66,7 @@ router.post('/abuse/:roomId', koaBody, async ctx => {
 app.use(router.routes());
 
 const apiHost = process.env.API_HOST;
-const cspDefaultSrc = `'self'${apiHost ? ` https://${apiHost} wss://${apiHost}` : ''}`;
+const cspDefaultSrc = `'self'${apiHost ? ` http://${apiHost} ws://${apiHost}` : ''}`;
 
 function setStaticFileHeaders(ctx) {
   ctx.set({
