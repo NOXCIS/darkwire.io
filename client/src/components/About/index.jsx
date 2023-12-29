@@ -410,35 +410,6 @@ class About extends Component {
             .
           </p>
         </section>
-
-        <section id="donate">
-          <h4>Donate</h4>
-          <p>
-            Darkwire is maintained and hosted by two developers with full-time jobs. If you get some value from this
-            service we would appreciate any donation you can afford. We use these funds for server and DNS costs. Thank
-            you!
-          </p>
-          <strong>Bitcoin</strong>
-          <p>189sPnHGcjP5uteg2UuNgcJ5eoaRAP4Bw4</p>
-          <strong>Ethereum</strong>
-          <p>0x36dc407bB28aA1EE6AafBee0379Fe6Cff881758E</p>
-          <strong>Litecoin</strong>
-          <p>LUViQeSggBBtYoN2qNtXSuxYoRMzRY8CSX</p>
-          <strong>PayPal:</strong>
-          <br />
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_s-xclick" />
-            <input type="hidden" name="hosted_button_id" value="UAH5BCLA9Y8VW" />
-            <input
-              type="image"
-              src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"
-              border="0"
-              name="submit"
-              alt="PayPal - The safer, easier way to pay online!"
-            />
-            <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1" />
-          </form>
-        </section>
       </div>
     );
   }
