@@ -14,7 +14,7 @@ class Welcome extends Component {
     return (
       <div>
         <div>
-          v2.1 is a complete rewrite and includes several new features. Here are some highlights:
+          v2.0 is a complete rewrite and includes several new features. Here are some highlights:
           <ul className="native">
             <li>Support on all modern browsers (Chrome, Firefox, Safari, Safari iOS, Android)</li>
             <li>Slash commands (/nick, /me, /clear)</li>
@@ -22,6 +22,13 @@ class Welcome extends Component {
             <li>Front-end rewritten in React.js and Redux</li>
             <li>Send files</li>
           </ul>
+          <div>
+            You can learn more{' '}
+            <a href="https://github.com/darkwire/darkwire.io" target="_blank" rel="noopener noreferrer">
+              here
+            </a>
+            .
+          </div>
         </div>
         <br />
         <p className="mb-2">Others can join this room using the following URL:</p>

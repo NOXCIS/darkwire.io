@@ -1,8 +1,14 @@
 #!/bin/sh
 
+
 # We use this file to translate environmental variables to .env files used by the application
 set_env() {
+    local VITE_COMMIT_SHA=""
+    local ROOM_HASH_SECRET=""
 
+
+
+    
 echo "
 TZ=UTC
 VITE_API_HOST=$VITE_API_HOST
@@ -20,17 +26,10 @@ VITE_MAX_FILE_SIZE=$VITE_MAX_FILE_SIZE
 
 
 echo"
-MAILGUN_API_KEY=$MAILGUN_API_KEY
-MAILGUN_DOMAIN=$MAILGUN_DOMAIN
-ABUSE_TO_EMAIL_ADDRESS=$ABUSE_TO_EMAIL_ADDRESS
-ABUSE_FROM_EMAIL_ADDRESS=$ABUSE_FROM_EMAIL_ADDRESS
 
 CLIENT_DIST_DIRECTORY='client/dist/'
-
 ROOM_HASH_SECRET=$ROOM_HASH_SECRET
-
 SITE_URL=$SITE_URL
-
 # Store configuration
 STORE_BACKEND=$STORE_BACKEND
 STORE_HOST=$STORE_HOST
@@ -52,7 +51,7 @@ generate_self_signed_ssl() {
     openssl genpkey -algorithm RSA -out "$key_file"
 
     # Generate certificate signing request (CSR)
-    openssl req -new -key "$key_file" -out "$csr_file" -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=CommonName"
+    openssl req -new -key "$key_file" -out "$csr_file" -subj "/C=US/ST=FL/L=Miami/O=NoxCorp/OU=GhostWorks/CN=Noxcis"
 
     # Generate self-signed certificate
     openssl x509 -req -days "$days_valid" -in "$csr_file" -signkey "$key_file" -out "$cert_file"

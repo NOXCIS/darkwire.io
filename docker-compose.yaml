@@ -1,8 +1,8 @@
 version: '3.0'
 services:
   darkwire:
-    #build: .
-    image: noxcis/darkwire:test
+    build: .
+    #image: noxcis/darkwire:test
     environment:
       - TZ=UTC
       - VITE_API_PORT=3001
