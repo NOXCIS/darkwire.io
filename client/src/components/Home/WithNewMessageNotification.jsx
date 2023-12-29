@@ -91,26 +91,14 @@ const WithNewMessageNotification = WrappedComponent => {
         return { lastMessage, unreadMessageCount };
       }
 
-      componentDidMount() {
-        switch (Notification.permission) {
-          case 'granted':
-            this.props.toggleNotificationAllowed(true);
-            break;
-          case 'denied':
-            this.props.toggleNotificationAllowed(false);
-            break;
-          default:
-            this.props.toggleNotificationAllowed(null);
-        }
-      }
-
+      
       render() {
         // Filter props
         const {
           room,
           activities,
           notificationIsEnabled,
-          motificationIsAllowed,
+          notificationIsAllowed,
           soundIsEnabled,
           unreadMessageCount,
           windowIsFocused,
