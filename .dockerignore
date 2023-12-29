@@ -6,4 +6,3 @@
 !start.sh
 !server/*
 !client/*
-**/node_modules/*

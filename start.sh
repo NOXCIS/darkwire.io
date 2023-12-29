@@ -16,7 +16,7 @@ VITE_COMMIT_SHA=$VITE_COMMIT_SHA
 
 # Set max transferable file size in MB
 VITE_MAX_FILE_SIZE=$VITE_MAX_FILE_SIZE
-" > client/.env.dist
+" > client/.env
 
 
 echo"
@@ -34,7 +34,7 @@ SITE_URL=$SITE_URL
 # Store configuration
 STORE_BACKEND=$STORE_BACKEND
 STORE_HOST=$STORE_HOST
-" > server/.env.dist
+" > server/.env
 
 exec "$@"
 }

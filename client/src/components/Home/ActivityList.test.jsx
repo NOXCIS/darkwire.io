@@ -58,7 +58,7 @@ describe('ActivityList component', () => {
       </Provider>,
     );
 
-    fireEvent.click(getByText('By using Darkwire, you are agreeing to our Acceptable Use Policy and Terms of Service'));
+    fireEvent.click(getByText('About'));
     vi.runAllTimers();
 
     expect(mockOpenModal.mock.calls[0][0]).toBe('About');
