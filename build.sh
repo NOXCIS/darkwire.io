@@ -9,11 +9,16 @@ fi
 
 echo "building client..."
 cd client
-yarn --production=false
-yarn build
+yarn 
+yarn build 
+yarn cache clean 
+yarn autoclean --force
+
 cd ../
 
 echo "building server..."
 cd server
-yarn  --production=false
-yarn build
+yarn 
+yarn build 
+yarn cache clean
+yarn autoclean --force
