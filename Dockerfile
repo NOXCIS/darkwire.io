@@ -20,7 +20,7 @@ FROM node:alpine3.19
 WORKDIR /home/node
 COPY --from=builder /home/node .
 
-RUN apk add --no-cache nginx openssl && \
+RUN apk add --no-cache curl nginx openssl && \
     rm /etc/nginx/http.d/default.conf && \
     mv /home/node/default.conf /etc/nginx/http.d/ && \
     chmod +x /home/node/start.sh
