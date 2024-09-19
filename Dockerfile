@@ -1,33 +1,42 @@
 # Stage 1: Build Stage
-FROM node:alpine3.19 AS builder
+FROM node:current-alpine AS builder
 
-WORKDIR /home/node
-COPY --chown=node:node . .
+WORKDIR /opt/app
+COPY  . .
 
 RUN apk update \
         && apk add --no-cache bash \
-        && chmod +x /home/node/start.sh \
+        && chmod +x /opt/app/start.sh \
         && npm install -g yarn@latest --force \
         && yarn install --flat --production --no-cache \
         && yarn build --no-cache \
-        && rm -rf /home/node/node_modules \
+        && rm -rf /opt/app/node_modules \
+        && rm -rf /opt/app/server/node_modules \
         && yarn cache clean \
         && yarn autoclean --force
 
 # Stage 2: Production Stage
-FROM node:alpine3.19
+FROM alpine:latest
 
-WORKDIR /home/node
-COPY --from=builder /home/node .
+WORKDIR /opt/app
 
-RUN apk add --no-cache curl nginx openssl && \
-    rm /etc/nginx/http.d/default.conf && \
-    mv /home/node/default.conf /etc/nginx/http.d/ && \
-    chmod +x /home/node/start.sh
+COPY --from=builder /opt/app/client/dist /opt/app/client/dist
+COPY --from=builder /opt/app/server /opt/app/server
+COPY package.json /opt/app/package.json
+COPY default.conf /etc/nginx/http.d/
+COPY start.sh /opt/app/start.sh
 
-STOPSIGNAL SIGINT
+
+
+
+RUN apk add --no-cache nginx yarn openssl && \
+    chmod +x /opt/app/start.sh
+
+
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=3 \ 
     CMD [ "curl", "-f", "http://localhost:3001", "||", "exit", "1" ]
 
-CMD ["/home/node/start.sh"]
+CMD ["/opt/app/start.sh"]
+
+STOPSIGNAL SIGTERM

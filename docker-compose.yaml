@@ -1,4 +1,4 @@
-version: '3.0'
+
 services:
   darkwire:
     build: .
@@ -9,7 +9,7 @@ services:
       - VITE_API_HOST=localhost
       - VITE_API_PROTOCOL=http
       - VITE_COMMIT_SHA=some_sha
-      - VITE_MAX_FILE_SIZE=4
+      - VITE_MAX_FILE_SIZE=20
       - MAILGUN_API_KEY=api-key
       - MAILGUN_DOMAIN=darkwire.io
       - ABUSE_TO_EMAIL_ADDRESS=abuse@darkwire.io
@@ -21,7 +21,7 @@ services:
     networks:
       - db
     ports:
-      - 3001:80
+      - 3002:80
       - 4001:443
       - 5001:3001
       

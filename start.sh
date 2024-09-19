@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 # We use this file to translate environmental variables to .env files used by the application
 set_env() {
 echo "
@@ -52,8 +51,26 @@ generate_self_signed_ssl() {
     echo "Certificate signing request: $csr_file"
 }
 
+# Graceful shutdown function
+shutdown_nginx() {
+    echo "Shutting down Nginx..."
+    nginx -s quit
+    exit 0
+}
+
+# Trap SIGTERM signal and call shutdown_nginx
+trap 'shutdown_nginx' SIGTERM
+
 set_env &&
 # Start your application
-generate_self_signed_ssl &&
-nginx &&
-yarn start #&
+generate_self_signed_ssl generate_self_signed_ssl >> /dev/null 2>&1
+
+
+# Start the server
+cd server
+yarn install
+cd ..
+yarn start &&
+nginx &
+# Wait indefinitely to handle SIGTERM
+wait
