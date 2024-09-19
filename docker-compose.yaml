@@ -3,27 +3,18 @@ services:
   darkwire:
     build: .
     #image: noxcis/darkwire:test
-    environment:
-      - TZ=UTC
-      - VITE_API_PORT=3001
-      - VITE_API_HOST=localhost
-      - VITE_API_PROTOCOL=http
-      - VITE_COMMIT_SHA=some_sha
-      - VITE_MAX_FILE_SIZE=20
-      - MAILGUN_API_KEY=api-key
-      - MAILGUN_DOMAIN=darkwire.io
-      - ABUSE_TO_EMAIL_ADDRESS=abuse@darkwire.io
-      - ABUSE_FROM_EMAIL_ADDRESS=Darkwire <no-reply@darkwire.io>
-      - CLIENT_DIST_DIRECTORY='client/dist'
-      - ROOM_HASH_SECRET='some-uuid'
-      - SITE_URL=https://darkwire.io
-      - STORE_BACKEND=memory
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
     networks:
       - db
     ports:
       - 3002:80
       - 4001:443
       - 5001:3001
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
       
 networks:
   db:

@@ -1,55 +1,83 @@
 #!/bin/sh
 
-# We use this file to translate environmental variables to .env files used by the application
-set_env() {
-echo "
-TZ=UTC
-VITE_API_HOST=$VITE_API_HOST
-VITE_API_PROTOCOL=$VITE_API_PROTOCOL
-VITE_API_PORT=$VITE_API_PORT
-VITE_COMMIT_SHA=$VITE_COMMIT_SHA
-MODE=production
-VITE_COMMIT_SHA=$VITE_COMMIT_SHA
-VITE_MAX_FILE_SIZE=$VITE_MAX_FILE_SIZE
-" > client/.env
-
-
-echo "
-MAILGUN_API_KEY=$MAILGUN_API_KEY
-MAILGUN_DOMAIN=$MAILGUN_DOMAIN
-ABUSE_TO_EMAIL_ADDRESS=$ABUSE_TO_EMAIL_ADDRESS
-ABUSE_FROM_EMAIL_ADDRESS=$ABUSE_FROM_EMAIL_ADDRESS
-CLIENT_DIST_DIRECTORY='client/dist/'
-ROOM_HASH_SECRET=$ROOM_HASH_SECRET
-SITE_URL=$SITE_URL
-STORE_BACKEND=$STORE_BACKEND
-STORE_HOST=$STORE_HOST
-" > server/.env
-}
 
 generate_self_signed_ssl() {
     local key_file="certs/selfsigned.key"
     local cert_file="certs/selfsigned.crt"
     local csr_file="certs/selfsigned.csr"
+    local config_file="certs/openssl.cnf"
     local days_valid=365
 
-    # Create "certs" directory if it doesn't exist
     mkdir -p certs
 
-    # Generate private key
+    cat > "$config_file" <<EOF
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+req_extensions = req_ext
+x509_extensions = v3_ca
+
+[dn]
+C = US
+ST = FL
+L = Miami
+O = NoxCorp
+OU = GhostWorks
+CN = Noxcis
+
+[req_ext]
+subjectAltName = @alt_names
+
+[alt_names]
+IP.1 = 127.0.0.1
+
+[v3_ca]
+basicConstraints = critical, CA:TRUE, pathlen:0
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+EOF
+
     openssl genpkey -algorithm RSA -out "$key_file"
-
-    # Generate certificate signing request (CSR)
-    openssl req -new -key "$key_file" -out "$csr_file" -subj "/C=US/ST=FL/L=Miami/O=NoxCorp/OU=GhostWorks/CN=Noxcis"
-
-    # Generate self-signed certificate
-    openssl x509 -req -days "$days_valid" -in "$csr_file" -signkey "$key_file" -out "$cert_file"
-
-    # Provide information about the generated files
-    echo "Self-signed SSL key: $key_file"
-    echo "Self-signed SSL certificate: $cert_file"
-    echo "Certificate signing request: $csr_file"
+    openssl req -new -key "$key_file" -out "$csr_file" -config "$config_file"
+    openssl x509 -req -days "$days_valid" -in "$csr_file" -signkey "$key_file" \
+        -out "$cert_file" -extfile "$config_file" -extensions req_ext -extensions v3_ca
 }
+
+#!/bin/bash
+
+# Function to allow only private IP ranges for incoming connections
+allow_private_ips_only() {
+    # Flush existing iptables rules
+    iptables -F
+    iptables -X
+
+    # Allow loopback traffic
+    iptables -A INPUT -i lo -j ACCEPT
+    iptables -A OUTPUT -o lo -j ACCEPT
+
+    # Allow established and related connections
+    iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+    # Allow traffic from private IP ranges
+    iptables -A INPUT -s 10.0.0.0/8 -j ACCEPT
+    iptables -A INPUT -s 172.16.0.0/12 -j ACCEPT
+    iptables -A INPUT -s 192.168.0.0/16 -j ACCEPT
+
+    # Drop all other traffic
+    iptables -A INPUT -j DROP
+
+    # Allow outgoing traffic to private IP ranges
+    iptables -A OUTPUT -d 10.0.0.0/8 -j ACCEPT
+    iptables -A OUTPUT -d 172.16.0.0/12 -j ACCEPT
+    iptables -A OUTPUT -d 192.168.0.0/16 -j ACCEPT
+
+    # Drop all other outgoing traffic
+    iptables -A OUTPUT -j DROP
+}
+
+
 
 # Graceful shutdown function
 shutdown_nginx() {
@@ -61,16 +89,21 @@ shutdown_nginx() {
 # Trap SIGTERM signal and call shutdown_nginx
 trap 'shutdown_nginx' SIGTERM
 
-set_env &&
-# Start your application
-generate_self_signed_ssl generate_self_signed_ssl >> /dev/null 2>&1
 
+        generate_self_signed_ssl  >> /dev/null 2>&1 
+        echo '
+██████╗  █████╗ ██████╗ ██╗  ██╗██╗    ██╗██╗██████╗ ███████╗
+██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝██║    ██║██║██╔══██╗██╔════╝
+██║  ██║███████║██████╔╝█████╔╝ ██║ █╗ ██║██║██████╔╝█████╗  
+██║  ██║██╔══██║██╔══██╗██╔═██╗ ██║███╗██║██║██╔══██╗██╔══╝  
+██████╔╝██║  ██║██║  ██║██║  ██╗╚███╔███╔╝██║██║  ██║███████╗
+╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝╚═╝  ╚═╝╚══════╝
+Dockerized by NOXCIS                                                             
+'
+        # Start the server
+        allow_private_ips_only
+        yarn start &
+        nginx &
+        # Wait indefinitely to handle SIGTERM
+        wait
 
-# Start the server
-cd server
-yarn install
-cd ..
-yarn start &&
-nginx &
-# Wait indefinitely to handle SIGTERM
-wait

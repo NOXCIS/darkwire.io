@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 api_host=$API_HOST
 
