@@ -5,15 +5,10 @@ FROM --platform=$BUILDPLATFORM node:current-alpine AS builder
 
 # Client configuration will be put into client/.env
 ENV TZ=UTC \
-    VITE_COMMIT_SHA=prion
-
-
+    VITE_COMMIT_SHA=terra-firma
 
 WORKDIR /opt/app
 COPY  . . 
-
-
-
 RUN     npm install -g yarn@latest --force \
         && yarn install --flat --production --no-cache \
         && yarn build --no-cache \
@@ -27,9 +22,7 @@ FROM alpine:latest
 WORKDIR /opt/app
 
 RUN apk add --no-cache nginx yarn openssl iptables
-
 COPY --from=builder /opt/app/client/dist /opt/app/client/dist
-#COPY --from=builder /opt/app/client/src/.env /opt/app/client/src/.env
 COPY --from=builder /opt/app/server /opt/app/server
 COPY package.json /opt/app/package.json
 COPY default.conf /etc/nginx/http.d/
