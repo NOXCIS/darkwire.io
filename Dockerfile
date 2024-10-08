@@ -31,13 +31,9 @@ COPY start.sh /opt/app/start.sh
 
 RUN  chmod +x /opt/app/start.sh
 
-
-
-
-
-
-HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=3 \ 
-    CMD [ "curl", "-f", "http://localhost:3001", "||", "exit", "1" ]
+    
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD \
+    sh -c 'pgrep nginx > /dev/null && pgrep node > /dev/null' || exit 1
 
 CMD ["/opt/app/start.sh", "start" ]
 
