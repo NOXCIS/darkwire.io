@@ -1,0 +1,46 @@
+name: Build and Push Docker Image (Daily)
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Schedule the workflow to run daily at midnight (UTC time). Adjust the time if needed.
+  workflow_dispatch:  # Manual run trigger
+    inputs:
+      trigger-build:
+        description: 'Trigger a manual build and push'
+        default: 'true'
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Check out the repository code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Use Node.js version 18
+      - name: Use Node.js version 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # Log in to Docker Hub (replace with the appropriate registry if using something else)
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Set up Docker Buildx (needed for multi-platform builds)
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Build and push Docker image for multiple platforms
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .  # Path to the directory containing the Dockerfile (subfolder)
+          push: true
+          tags: noxcis/darkwire:terra-firma
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
