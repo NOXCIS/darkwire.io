@@ -43,4 +43,4 @@ jobs:
           context: .  # Path to the directory containing the Dockerfile (subfolder)
           push: true
           tags: noxcis/darkwire:terra-firma
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
