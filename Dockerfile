@@ -1,4 +1,4 @@
-# Stage 1: Build Stage
+# builder: Builder For Darkwore
 FROM --platform=$BUILDPLATFORM node:current-alpine AS builder
 
 
@@ -16,7 +16,7 @@ RUN     npm install -g yarn@latest --force \
         && yarn cache clean \
         && yarn autoclean --force
 
-# Stage 2: Production Stage
+# final: Final Darkwire Image
 FROM alpine:latest
 
 WORKDIR /opt/app
